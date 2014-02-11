@@ -1,0 +1,99 @@
+#!/bin/bash
+
+source $OPENSHIFT_CARTRIDGE_SDK_BASH
+
+
+NGINX_EXEC=$OPENSHIFT_ADVANCED_PYTHON_DIR/usr/nginx/versions/$NGINX_VERSION/bin/nginx
+NGINX_CONFIG_FILE=$OPENSHIFT_ADVANCED_PYTHON_DIR/conf/nginx.conf
+NGINX_PID_FILE=$OPENSHIFT_ADVANCED_PYTHON_DIR/run/nginx.pid
+
+
+function start() {
+    echo "Starting Nginx"
+
+    # nginx will always use the prefix defined at compile time unless an absolute path to the conf file is given
+    nohup "$NGINX_EXEC" -c "$NGINX_CONFIG_FILE" 2>&1
+    [ "$?" == "0" ] && wait_for_pid_file $NGINX_PID_FILE
+}
+
+
+function stop() {
+    echo "Starting Nginx"
+
+    if [ -f "$NGINX_PID_FILE" ]; then
+        pid=`cat "$NGINX_PID_FILE" 2> /dev/null`
+        eval "'$NGINX_EXEC' -c '$NGINX_CONFIG_FILE' -s stop"
+        wait_for_stop $pid
+    fi
+}
+
+
+function restart() {
+    echo "Restarting Nginx"
+    stop
+    start
+}
+
+
+function status() {
+    res=0
+    output=$(curl -s -m 30 http://$OPENSHIFT_ADVANCED_PYTHON_IP:$OPENSHIFT_ADVANCED_PYTHON_PORT/ &> /dev/null) || res=1
+
+    if [ $res -eq 0 ]
+    then
+        client_result "Nginx is running"
+        client_result "$output"
+    else
+        client_result "Nginx is either stopped or inaccessible"
+    fi
+}
+
+
+function reload() {
+    echo "Reloading Nginx"
+
+    if [ -f "$NGINX_PID_FILE" ]
+    then
+        pid=`cat "$NGINX_PID_FILE" 2> /dev/null`
+        output=$("$NGINX_EXEC" -c "$NGINX_CONFIG_FILE" -s reload)
+        client_result "$output"
+    else
+        client_result "Cannot reload Nginx as it is not running"
+    fi
+}
+
+
+function tidy() {
+    client_message "Emptying Nginx logs in: $OPENSHIFT_ADVANCED_PYTHON_DIR/logs"
+    rm logs/access.log
+    rm logs/error.log
+}
+
+
+function update() {
+    version=${NGINX_VERSION:-1.4.4}
+
+    echo "Rebuilding Nginx v$version"
+    stop
+
+    mkdir -p tmp/build
+    bin/compile tmp/build
+
+    bin_dir="usr/nginx/versions/$version/bin"
+    mkdir -p $bin_dir
+    cp -f tmp/build/out/nginx $bin_dir
+
+    rm -rf tmp/build
+}
+
+
+case "$1" in
+  start)     start ;;
+  stop)      stop ;;
+  restart)   restart ;;
+  status)    status ;;
+  reload)    reload ;;
+  tidy)      tidy ;;
+  update)    update ;;
+  *)         exit 0
+esac

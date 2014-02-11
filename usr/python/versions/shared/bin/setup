@@ -1,0 +1,7 @@
+#!/bin/bash -eu
+
+version="$1"
+
+# Copy the version specific files to python directory
+shopt -s dotglob
+[ -d $OPENSHIFT_ADVANCED_PYTHON_DIR/usr/python/versions/$version/metadata ] && cp -rf $OPENSHIFT_ADVANCED_PYTHON_DIR/usr/python/versions/$version/metadata/* $OPENSHIFT_ADVANCED_PYTHON_DIR/metadata

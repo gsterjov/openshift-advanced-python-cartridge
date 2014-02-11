@@ -1,0 +1,54 @@
+#!/bin/bash
+#
+# usage: bin/compile <build-dir>
+
+set -eo pipefail
+
+mkdir -p "$1/out" "$1/src"
+bin_dir=$(cd "$1/out" && pwd)
+src_dir=$(cd "$1/src" && pwd)
+buildpack=$(dirname $(dirname $0))
+
+pcre_ver=${PCRE_VERSION:-8.33}
+pcre_file=${PCRE_FILE:-pcre-$pcre_ver.tar.gz}
+pcre_url=${PCRE_URL:-http://sourceforge.net/projects/pcre/files/pcre/$pcre_ver/$pcre_file}
+
+nginx_ver=${NGINX_VERSION:-1.4.4}
+nginx_file=${NGINX_FILE:-nginx-$nginx_ver.tar.gz}
+nginx_url=${NGINX_URL:-http://nginx.org/download/$nginx_file}
+
+
+if test -d $src_dir/pcre-$pcre_ver
+then
+    echo "-----> Using PCRE $pcre_ver"
+else
+    mkdir -p $src_dir/pcre-$pcre_ver
+    cd $src_dir
+    echo    "       First download, may take several minutes"
+    echo -n "-----> Installing PCRE $pcre_ver..."
+    curl -sOL $pcre_url
+    tar zxf $pcre_file
+    rm -f $pcre_file
+    echo " done"
+fi
+
+if test -d $src_dir/nginx-$nginx_ver
+then
+    echo "-----> Using Nginx $nginx_ver"
+else
+    mkdir -p $src_dir/nginx-$nginx_ver
+    cd $src_dir
+    echo    "       First download, may take several minutes"
+    echo -n "-----> Installing Nginx $nginx_ver..."
+    curl -sO $nginx_url
+    tar zxf $nginx_file
+    rm -f $nginx_file
+    echo " done"
+fi
+
+
+cd $src_dir/nginx-$nginx_ver/
+./configure --with-pcre=$src_dir/pcre-$pcre_ver/ --with-http_ssl_module
+make
+cp -f objs/nginx $bin_dir
+make clean

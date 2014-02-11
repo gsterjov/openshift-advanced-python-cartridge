@@ -1,0 +1,38 @@
+source $OPENSHIFT_CARTRIDGE_SDK_BASH
+
+alias rsync="rsync --delete-after -azO -e '$GIT_SSH'"
+
+upstream_ssh="<%= ENV['OPENSHIFT_GEAR_UUID'] %>@<%= ENV['OPENSHIFT_APP_NAME'] %>-${OPENSHIFT_NAMESPACE}.<%= ENV['OPENSHIFT_CLOUD_DOMAIN'] %>"
+
+# remove previous metadata, if any
+rm -f $OPENSHIFT_HOMEDIR/app-deployments/current/metadata.json
+
+if ! marker_present "force_clean_build"; then
+  # don't fail if these rsyncs fail
+  set +e
+  rsync $upstream_ssh:'$OPENSHIFT_BUILD_DEPENDENCIES_DIR' $OPENSHIFT_BUILD_DEPENDENCIES_DIR
+  rsync $upstream_ssh:'$OPENSHIFT_DEPENDENCIES_DIR' $OPENSHIFT_DEPENDENCIES_DIR
+  set -e
+fi
+
+# Build/update libs and run user pre_build and build
+gear build
+
+# Run tests
+# python ${OPENSHIFT_REPO_DIR}setup.py test
+
+# Deploy new build
+
+# Stop app
+$GIT_SSH $upstream_ssh "gear stop --conditional --exclude-web-proxy --git-ref $GIT_COMMIT"
+
+deployment_dir=`$GIT_SSH $upstream_ssh 'gear create-deployment-dir'`
+
+# Push content back to application
+rsync $OPENSHIFT_HOMEDIR/app-deployments/current/metadata.json $upstream_ssh:app-deployments/$deployment_dir/metadata.json
+rsync --exclude .git $WORKSPACE/ $upstream_ssh:app-root/runtime/repo/
+rsync $OPENSHIFT_BUILD_DEPENDENCIES_DIR $upstream_ssh:app-root/runtime/build-dependencies/
+rsync $OPENSHIFT_DEPENDENCIES_DIR $upstream_ssh:app-root/runtime/dependencies/
+
+# Configure / start app
+$GIT_SSH $upstream_ssh "gear remotedeploy --deployment-datetime $deployment_dir"
