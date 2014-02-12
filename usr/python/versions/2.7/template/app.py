@@ -1,16 +1,7 @@
-#!/usr/bin/python
-import os
 
-virtenv = os.environ['OPENSHIFT_PYTHON_DIR'] + '/virtenv/'
-virtualenv = os.path.join(virtenv, 'bin/activate_this.py')
-try:
-    execfile(virtualenv, dict(__file__=virtualenv))
-except IOError:
-    pass
-#
-# IMPORTANT: Put any additional includes below this line.  If placed above this
-# line, it's possible required libraries won't be in your searchable path
-# 
+# This is your WSGI entry point. All server frameworks
+# supported by the cartridge will look for application() in
+# the app.py file.
 
 def application(environ, start_response):
 
@@ -231,7 +222,7 @@ pre {
 <body>
 <section class='container'>
           <hgroup>
-            <h1>Welcome to your Python application on OpenShift</h1>
+            <h1>Welcome to your Advanced Python application on OpenShift</h1>
           </hgroup>
 
         <div class="row">
@@ -300,12 +291,3 @@ $ git push</pre>
     #
     start_response(status, response_headers)
     return [response_body]
-
-#
-# Below for testing only
-#
-if __name__ == '__main__':
-    from wsgiref.simple_server import make_server
-    httpd = make_server('localhost', 8051, application)
-    # Wait for a single request, serve it and quit.
-    httpd.handle_request()

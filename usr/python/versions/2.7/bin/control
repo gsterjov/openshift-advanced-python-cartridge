@@ -5,15 +5,19 @@ source "${OPENSHIFT_ADVANCED_PYTHON_DIR}/usr/python/versions/${OPENSHIFT_ADVANCE
 
 
 
-function start_app() {
+function start_gunicorn() {
     cd "$OPENSHIFT_REPO_DIR"
-    nohup python -u app.py > "$OPENSHIFT_ADVANCED_PYTHON_DIR/logs/appserver.log" 2>&1 &
+    nohup gunicorn -c $OPENSHIFT_ADVANCED_PYTHON_DIR/conf/gunicorn.py app:application > "$OPENSHIFT_ADVANCED_PYTHON_DIR/logs/appserver.log" 2>&1
     echo $! > $OPENSHIFT_ADVANCED_PYTHON_DIR/run/appserver.pid
 }
 
 function start() {
     echo "Starting PYTHON cart"
-    start_app
+
+    echo "Activating virtenv"
+    activate-virtenv
+
+    start_gunicorn
 }
 
 function stop_app() {
@@ -66,6 +70,13 @@ function reload() {
 function tidy() {
   client_message "Emptying python logs in: $OPENSHIFT_ADVANCED_PYTHON_DIR/logs"
   rm logs/appserver.log
+  rm logs/appserver.*.log
+}
+
+
+function build_server() {
+    cd $OPENSHIFT_REPO_DIR
+    pip install gunicorn
 }
 
 function build() {
@@ -89,6 +100,8 @@ function build() {
 
     echo "Activating virtenv"
     activate-virtenv
+
+    build_server
 
     if [ -f ${OPENSHIFT_REPO_DIR}/requirements.txt ]
     then
