@@ -2,15 +2,17 @@
 
 source $OPENSHIFT_CARTRIDGE_SDK_BASH
 
+NGINX_VERSION=${NGINX_VERSION:-1.4.4}
+PYTHON_VERSION=$OPENSHIFT_ADVANCED_PYTHON_VERSION
 
-NGINX_DIR=$OPENSHIFT_ADVANCED_PYTHON_DIR/usr/nginx/versions/shared
-PYTHON_DIR=$OPENSHIFT_ADVANCED_PYTHON_DIR/usr/python/versions/shared
+NGINX_DIR=$OPENSHIFT_ADVANCED_PYTHON_DIR/usr/nginx/versions/$NGINX_VERSION
+PYTHON_DIR=$OPENSHIFT_ADVANCED_PYTHON_DIR/usr/python/versions/$PYTHON_VERSION
 
 
 case $1 in
     update-configuration)
         source $PYTHON_DIR/lib/update-configuration
-        update-configuration $OPENSHIFT_ADVANCED_PYTHON_VERSION
+        update-configuration $PYTHON_VERSION
         ;;
     stop)
         exec $NGINX_DIR/bin/control "$@"

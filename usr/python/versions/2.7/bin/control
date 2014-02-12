@@ -1,7 +1,7 @@
 #!/bin/bash
 
 source $OPENSHIFT_CARTRIDGE_SDK_BASH
-source "${OPENSHIFT_ADVANCED_PYTHON_DIR}/usr/versions/${OPENSHIFT_PYTHON_VERSION}/lib/create-virtenv"
+source "${OPENSHIFT_ADVANCED_PYTHON_DIR}/usr/versions/${OPENSHIFT_ADVANCED_PYTHON_VERSION}/lib/create-virtenv"
 
 
 

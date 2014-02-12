@@ -77,7 +77,7 @@ function update() {
     stop
 
     mkdir -p tmp/build
-    bin/compile tmp/build
+    usr/nginx/versions/$version/bin/compile tmp/build
 
     bin_dir="usr/nginx/versions/$version/bin"
     mkdir -p $bin_dir
