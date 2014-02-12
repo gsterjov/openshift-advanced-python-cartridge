@@ -10,7 +10,7 @@ esac
 
 echo "1.4.4" > env/NGINX_VERSION
 
-for dir in logs run etc; do
+for dir in logs run; do
 	mkdir -p $dir
 done
 

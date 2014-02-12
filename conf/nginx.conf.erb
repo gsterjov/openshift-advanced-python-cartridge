@@ -1,10 +1,11 @@
 error_log  <%= ENV['OPENSHIFT_ADVANCED_PYTHON_DIR'] %>logs/error.log;
 pid        <%= ENV['OPENSHIFT_ADVANCED_PYTHON_DIR'] %>run/nginx.pid;
 
-worker_processes  2;
+worker_processes 1;
 
 events {
     worker_connections  1024;
+    accept_mutex off;
 }
 
 
@@ -28,14 +29,30 @@ http {
     gzip      on;
 
     keepalive_timeout  65;
-}
 
 
-server {
-    listen  <%= ENV['OPENSHIFT_ADVANCED_PYTHON_IP'] %>:<%= ENV['OPENSHIFT_ADVANCED_PYTHON_PORT'] %>;
-    root    <%= ENV['OPENSHIFT_REPO_DIR'] %>public;
+    upstream appserver {
+        server unix:<%= ENV['OPENSHIFT_ADVANCED_PYTHON_DIR'] %>run/appserver.sock fail_timeout=0;
+    }
 
-    location / {
-        index  index.html index.htm;
+    server {
+        listen  <%= ENV['OPENSHIFT_ADVANCED_PYTHON_IP'] %>:<%= ENV['OPENSHIFT_ADVANCED_PYTHON_PORT'] %>;
+        root    <%= ENV['OPENSHIFT_REPO_DIR'] %>public;
+
+        server_name _;
+        keepalive_timeout 5;
+        client_body_max_size 10m;
+
+        location / {
+            try_files $uri @proxy_to_app;
+        }
+
+        location @proxy_to_app {
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_set_header Host $http_host;
+            proxy_redirect off;
+
+            proxy_pass http://appserver;
+        }
     }
 }
