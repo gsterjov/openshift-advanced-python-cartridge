@@ -75,7 +75,6 @@ function tidy() {
 
 
 function build_server() {
-    cd $OPENSHIFT_REPO_DIR
     pip install gunicorn
 }
 

@@ -13,17 +13,17 @@ case $1 in
         update-configuration $PYTHON_VERSION
         ;;
     stop)
-        exec $NGINX_DIR/bin/control "$@"
-        exec $PYTHON_DIR/bin/control "$@"
+        $NGINX_DIR/bin/control "$@"
+        $PYTHON_DIR/bin/control "$@"
         ;;
     restart)
-        exec $NGINX_DIR/bin/control "stop"
-        exec $PYTHON_DIR/bin/control "stop"
-        exec $PYTHON_DIR/bin/control "start"
-        exec $NGINX_DIR/bin/control "start"
+        $NGINX_DIR/bin/control "stop"
+        $PYTHON_DIR/bin/control "stop"
+        $PYTHON_DIR/bin/control "start"
+        $NGINX_DIR/bin/control "start"
         ;;
     *)
-        exec $PYTHON_DIR/bin/control "$@"
-        exec $NGINX_DIR/bin/control "$@"
+        $PYTHON_DIR/bin/control "$@"
+        $NGINX_DIR/bin/control "$@"
         ;;
 esac

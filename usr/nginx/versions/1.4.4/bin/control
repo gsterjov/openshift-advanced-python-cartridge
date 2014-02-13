@@ -12,7 +12,7 @@ function start() {
     echo "Starting Nginx"
 
     # nginx will always use the prefix defined at compile time unless an absolute path to the conf file is given
-    nohup "$NGINX_EXEC" -c "$NGINX_CONFIG_FILE" 2>&1
+    nohup "$NGINX_EXEC" -c "$NGINX_CONFIG_FILE" > logs/nginx.log 2>&1
     [ "$?" == "0" ] && wait_for_pid_file $NGINX_PID_FILE
 }
 
@@ -65,6 +65,7 @@ function reload() {
 
 function tidy() {
     client_message "Emptying Nginx logs in: $OPENSHIFT_ADVANCED_PYTHON_DIR/logs"
+    rm logs/nginx.log
     rm logs/access.log
     rm logs/error.log
 }
