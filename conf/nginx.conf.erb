@@ -41,7 +41,6 @@ http {
 
         server_name _;
         keepalive_timeout 5;
-        client_body_max_size 10m;
 
         location / {
             try_files $uri @proxy_to_app;
