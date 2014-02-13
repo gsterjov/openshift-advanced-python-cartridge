@@ -12,4 +12,4 @@ echo "$version" > "$OPENSHIFT_ADVANCED_PYTHON_DIR/env/OPENSHIFT_ADVANCED_PYTHON_
 mkdir -p $OPENSHIFT_ADVANCED_PYTHON_DIR/template
 
 # Call the version specific install script
-$OPENSHIFT_ADVANCED_PYTHON_DIR/usr/python/versions/$version/bin/install $version
+exec $OPENSHIFT_ADVANCED_PYTHON_DIR/usr/python/versions/$version/bin/install $version
