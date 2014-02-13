@@ -12,4 +12,9 @@ echo "$version" > "$OPENSHIFT_ADVANCED_PYTHON_DIR/env/OPENSHIFT_ADVANCED_PYTHON_
 mkdir -p $OPENSHIFT_ADVANCED_PYTHON_DIR/template
 
 # Call the version specific install script
-exec $OPENSHIFT_ADVANCED_PYTHON_DIR/usr/python/versions/$version/bin/install $version
+$OPENSHIFT_ADVANCED_PYTHON_DIR/usr/python/versions/$version/bin/install $version
+
+# Install gevent as the default server
+source "${OPENSHIFT_ADVANCED_PYTHON_DIR}/usr/python/versions/${OPENSHIFT_ADVANCED_PYTHON_VERSION}/lib/create-virtenv"
+activate-virtenv
+pip install gevent

@@ -75,7 +75,7 @@ function tidy() {
 
 
 function build_server() {
-    pip install gunicorn
+    pip install gevent
 }
 
 function build() {
