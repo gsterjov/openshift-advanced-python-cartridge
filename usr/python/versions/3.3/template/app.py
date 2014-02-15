@@ -1,5 +1,7 @@
-#!/usr/bin/env python
-import os
+
+# This is your WSGI entry point. All server frameworks
+# supported by the cartridge will look for application() in
+# the app.py file.
 
 def application(environ, start_response):
     ctype = 'text/plain'
@@ -222,7 +224,7 @@ line-height: 1.4;
 
 <section class='container'>
           <hgroup>
-            <h1>Welcome to your Python application on OpenShift</h1>
+            <h1>Welcome to your Advanced Python application on OpenShift</h1>
           </hgroup>
           This is a sample WSGI application running on Python 3.3.
 
@@ -292,12 +294,3 @@ $ git push</pre>
     #
     start_response(status, response_headers)
     return [response_body.encode('utf-8') ]
-
-#
-# Below for testing only
-#
-if __name__ == '__main__':
-    from wsgiref.simple_server import make_server
-    httpd = make_server('localhost', 8051, application)
-    # Wait for a single request, serve it and quit.
-    httpd.handle_request()

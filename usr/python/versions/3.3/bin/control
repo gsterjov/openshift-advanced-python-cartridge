@@ -4,19 +4,58 @@ source $OPENSHIFT_CARTRIDGE_SDK_BASH
 source "${OPENSHIFT_ADVANCED_PYTHON_DIR}/usr/python/versions/${OPENSHIFT_ADVANCED_PYTHON_VERSION}/lib/create-virtenv"
 
 
+# default python server
+if [ ! $OPENSHIFT_PYTHON_SERVER ]; then
+    echo wsgiref > $OPENSHIFT_HOMEDIR/.env/user_vars/OPENSHIFT_PYTHON_SERVER
+    export OPENSHIFT_PYTHON_SERVER=wsgiref
+fi
 
-function start_app() {
-    cd "$OPENSHIFT_REPO_DIR"
-    nohup python -u app.py > "$OPENSHIFT_ADVANCED_PYTHON_DIR/logs/appserver.log" 2>&1 &
+
+function start_wsgiref() {
+    nohup python usr/python/versions/2.7/servers/wsgiref_server.py > "$OPENSHIFT_ADVANCED_PYTHON_DIR/logs/appserver.log" 2>&1 &
     echo $! > $OPENSHIFT_ADVANCED_PYTHON_DIR/run/appserver.pid
 }
 
-function start() {
-    echo "Starting PYTHON cart"
-    start_app
+function start_gevent() {
+    nohup python usr/python/versions/2.7/servers/gevent_server.py > "$OPENSHIFT_ADVANCED_PYTHON_DIR/logs/appserver.log" 2>&1 &
+    echo $! > $OPENSHIFT_ADVANCED_PYTHON_DIR/run/appserver.pid
 }
 
-function stop_app() {
+function start_gunicorn() {
+    nohup gunicorn -c $OPENSHIFT_ADVANCED_PYTHON_DIR/conf/gunicorn.py app:application > "$OPENSHIFT_ADVANCED_PYTHON_DIR/logs/appserver.log" 2>&1
+}
+
+
+function start() {
+    echo "Starting PYTHON cart"
+
+    echo "Activating virtenv"
+    activate-virtenv
+
+    # app servers have changed
+    if [ "$OPENSHIFT_PYTHON_SERVER" -ne "$OPENSHIFT_PYTHON_RUNNING_SERVER" ]; then
+        build_server
+    fi
+
+    export PYTHONPATH=$PYTHONPATH:$OPENSHIFT_REPO_DIR
+
+    case "$OPENSHIFT_PYTHON_SERVER" in
+        wsgiref)
+            start_wsgiref
+            ;;
+        gevent)
+            start_gevent
+            ;;
+        gunicorn)
+            start_gunicorn
+            ;;
+    esac
+}
+
+
+function stop() {
+    echo "Stopping PYTHON cart"
+
     if [ -s $OPENSHIFT_ADVANCED_PYTHON_DIR/run/appserver.pid ]
     then
         kpid=$(cat $OPENSHIFT_ADVANCED_PYTHON_DIR/run/appserver.pid)
@@ -29,12 +68,11 @@ function stop_app() {
         done
         kill -KILL $kpid >/dev/null 2>&1 || :
         rm -f $OPENSHIFT_ADVANCED_PYTHON_DIR/run/appserver.pid
-    fi
-}
 
-function stop() {
-    echo "Stopping PYTHON cart"
-    stop_app
+        if [ -S $OPENSHIFT_ADVANCED_PYTHON_DIR/run/appserver.sock ]; then
+            rm -f $OPENSHIFT_ADVANCED_PYTHON_DIR/run/appserver.sock
+        fi
+    fi
 }
 
 
@@ -66,7 +104,25 @@ function reload() {
 function tidy() {
   client_message "Emptying python logs in: $OPENSHIFT_ADVANCED_PYTHON_DIR/logs"
   rm logs/appserver.log
+  rm logs/appserver.*.log
 }
+
+
+# install the selected server
+function build_server() {
+    case "$OPENSHIFT_PYTHON_SERVER" in
+        gevent)
+            pip install gevent
+            ;;
+        gunicorn)
+            pip install gevent gunicorn
+            ;;
+    esac
+
+    echo $OPENSHIFT_PYTHON_SERVER > env/OPENSHIFT_PYTHON_RUNNING_SERVER
+    export OPENSHIFT_PYTHON_RUNNING_SERVER=$OPENSHIFT_PYTHON_SERVER
+}
+
 
 function build() {
     if [ -n "$OPENSHIFT_PYPI_MIRROR_URL" ]; then
@@ -89,6 +145,8 @@ function build() {
 
     echo "Activating virtenv"
     activate-virtenv
+
+    build_server
 
     if [ -f ${OPENSHIFT_REPO_DIR}/requirements.txt ]
     then
