@@ -3,6 +3,13 @@
 source $OPENSHIFT_CARTRIDGE_SDK_BASH
 
 
+# default python server
+if [ ! -z "$OPENSHIFT_PYTHON_SERVER" ]; then
+    echo "wsgiref" > $OPENSHIFT_HOMEDIR/.env/user_vars/OPENSHIFT_PYTHON_SERVER
+    export OPENSHIFT_PYTHON_SERVER="wsgiref"
+fi
+
+
 NGINX_EXEC=$OPENSHIFT_ADVANCED_PYTHON_DIR/usr/nginx/versions/$NGINX_VERSION/bin/nginx
 NGINX_CONFIG_FILE=$OPENSHIFT_ADVANCED_PYTHON_DIR/conf/nginx.conf
 NGINX_PID_FILE=$OPENSHIFT_ADVANCED_PYTHON_DIR/run/nginx.pid
