@@ -1,5 +1,5 @@
 processed_templates:
-- '**/*.erb'
+- 'conf/*.erb'
 dependency_dirs:
 - virtenv
 build_dependency_dirs:
