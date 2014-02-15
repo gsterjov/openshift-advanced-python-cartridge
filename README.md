@@ -20,7 +20,7 @@ To install this cartridge use the cartridge reflector when creating an app
 
 Using the cartridge isn't very different to the official python cartridge. Instead of providing a WSGI <code>application()</code> function at <code>wsig/application</code> you instead provide the <code>application()</code> function at <code>app.py</code>. This file will be used directly by all the available servers.
 
-By default *wsgiref* is used so a working environment can be provided immediately. This is easily changed by setting the OPENSHIFT_PYTHON_SERVER environment variable and then restarting or redeploying the app.
+By default **wsgiref** is used so a working environment can be provided immediately. This is easily changed by setting the OPENSHIFT_PYTHON_SERVER environment variable and then restarting or redeploying the app.
 
 	rhc env set OPENSHIFT_PYTHON_SERVER=gunicorn
 	rhc app restart
@@ -42,7 +42,8 @@ Any configuration for the server package will be exposed via environment variabl
 
 #### Environment Variables
 
-<code>OPENSHIFT_PYTHON_WORKERS</code> - The number of workers to spawn for packages like gunicorn. Default: <code>num_cpus * 2 + 1</code>
+<code>OPENSHIFT_PYTHON_WORKERS</code> - The number of workers to spawn for packages like gunicorn.
+Default: <code>number of CPUs * 2 + 1</code>
 
 
 ### Static files
