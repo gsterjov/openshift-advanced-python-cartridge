@@ -6,7 +6,7 @@ It does this by combining a modified python cartridge with the [downloadable Ngi
 
 ### Why?
 
-The official python cartridge uses Apache and mod_wsgi to serve your app which present problems for websockets and isn't asynchronous like Nginx. An alternative is to provide an app.py file which allows you to avoid mod_wsgi and use something like gevent, but that elimintates the ability to serve static files through a fast webserver like Apache or Nginx.
+The official python cartridge uses Apache and mod_wsgi to serve your app which isn't asynchronous and presents a problem for websockets. An alternative is to provide an app.py file which allows you to avoid mod_wsgi and use something like gevent, but that elimintates the ability to serve static files through a fast webserver like Apache or Nginx.
 
 
 ### Installation
@@ -38,11 +38,11 @@ Be aware, however, that restarting/redeploying after changing servers for the fi
 ### Configuration
 
 There is little to no configuration required as most of the details lay in the interaction between Nginx and the WSGI server package. All that is required is to define the <code>application()</code> function in <code>app.py</code>.
-Any configuration for the server package will be exposed by environment variables.
+Any configuration for the server package will be exposed via environment variables.
 
 #### Environment Variables
 
-<code>OPENSHIFT_PYTHON_WORKERS</code> - The number of workers to spawn for packages like gunicorn. By default it is num_cpus * 2 + 1
+<code>OPENSHIFT_PYTHON_WORKERS</code> - The number of workers to spawn for packages like gunicorn. Default: <code>num_cpus * 2 + 1</code>
 
 
 ### Static files
