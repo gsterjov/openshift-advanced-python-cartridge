@@ -4,6 +4,11 @@ source $OPENSHIFT_CARTRIDGE_SDK_BASH
 source "${OPENSHIFT_ADVANCED_PYTHON_DIR}/usr/python/versions/${OPENSHIFT_ADVANCED_PYTHON_VERSION}/lib/create-virtenv"
 
 
+if [ ! -z "$OPENSHIFT_PYTHON_SERVER" ]; then
+    echo "wsgiref" > $OPENSHIFT_HOMEDIR/.env/user_vars/OPENSHIFT_PYTHON_SERVER
+    export OPENSHIFT_PYTHON_SERVER="wsgiref"
+fi
+
 
 function start_wsgiref() {
     nohup python usr/python/versions/2.7/servers/wsgiref_server.py > "$OPENSHIFT_ADVANCED_PYTHON_DIR/logs/appserver.log" 2>&1 &
@@ -62,6 +67,10 @@ function stop() {
         done
         kill -KILL $kpid >/dev/null 2>&1 || :
         rm -f $OPENSHIFT_ADVANCED_PYTHON_DIR/run/appserver.pid
+
+        if [ -f $OPENSHIFT_ADVANCED_PYTHON_DIR/run/appserver.sock ]; then
+            rm -f $OPENSHIFT_ADVANCED_PYTHON_DIR/run/appserver.sock
+        fi
     fi
 }
 

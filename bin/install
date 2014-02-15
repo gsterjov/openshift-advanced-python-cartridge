@@ -10,7 +10,6 @@ esac
 
 echo "$version" > env/OPENSHIFT_ADVANCED_PYTHON_VERSION
 echo "1.4" > env/NGINX_VERSION
-echo "wsgiref" > env/OPENSHIFT_PYTHON_SERVER
 
 
 for dir in logs run; do
