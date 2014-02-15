@@ -16,7 +16,5 @@ for dir in logs run; do
 	mkdir -p $dir
 done
 
-mkdir -p $OPENSHIFT_ADVANCED_PYTHON_DIR/template
-
 # Call the version specific install script
 exec $OPENSHIFT_ADVANCED_PYTHON_DIR/usr/python/versions/$version/bin/install $version

@@ -8,10 +8,6 @@ fi
 
 version="$1"
 
-# Copy the version specific files to python directory
-shopt -s dotglob
-[ -d $OPENSHIFT_ADVANCED_PYTHON_DIR/usr/python/versions/$version/template ] && cp -r $OPENSHIFT_ADVANCED_PYTHON_DIR/usr/python/versions/$version/template/* $OPENSHIFT_ADVANCED_PYTHON_DIR/template
-
 # The virtual environment is assumed to exist going forward
 if [ ! -f $OPENSHIFT_ADVANCED_PYTHON_DIR/virtenv/bin/python ]
 then
