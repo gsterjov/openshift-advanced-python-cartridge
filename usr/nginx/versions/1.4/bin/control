@@ -5,8 +5,8 @@ source $OPENSHIFT_CARTRIDGE_SDK_BASH
 
 # default python server
 if [ ! -z "$OPENSHIFT_PYTHON_SERVER" ]; then
-    echo "wsgiref" > $OPENSHIFT_HOMEDIR/.env/user_vars/OPENSHIFT_PYTHON_SERVER
-    export OPENSHIFT_PYTHON_SERVER="wsgiref"
+    echo wsgiref > $OPENSHIFT_HOMEDIR/.env/user_vars/OPENSHIFT_PYTHON_SERVER
+    export OPENSHIFT_PYTHON_SERVER=wsgiref
 fi
 
 
