@@ -69,7 +69,7 @@ function stop() {
         kill -KILL $kpid >/dev/null 2>&1 || :
         rm -f $OPENSHIFT_ADVANCED_PYTHON_DIR/run/appserver.pid
 
-        if [ -f $OPENSHIFT_ADVANCED_PYTHON_DIR/run/appserver.sock ]; then
+        if [ -S $OPENSHIFT_ADVANCED_PYTHON_DIR/run/appserver.sock ]; then
             rm -f $OPENSHIFT_ADVANCED_PYTHON_DIR/run/appserver.sock
         fi
     fi
@@ -115,8 +115,7 @@ function build_server() {
             pip install gevent
             ;;
         gunicorn)
-            pip install gevent
-            pip install gunicorn
+            pip install gevent gunicorn
             ;;
     esac
 

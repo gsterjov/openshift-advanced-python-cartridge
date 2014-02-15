@@ -5,10 +5,11 @@ cart_dir = os.environ["OPENSHIFT_ADVANCED_PYTHON_DIR"]
 tmp_dir = os.environ["OPENSHIFT_TMP_DIR"]
 
 
-if os.environ["OPENSHIFT_PYTHON_WORKERS"]:
-	works = os.environ["OPENSHIFT_PYTHON_WORKERS"]
-else
+if os.environ.has_key("OPENSHIFT_PYTHON_WORKERS"):
+	workers = os.environ["OPENSHIFT_PYTHON_WORKERS"]
+else:
 	workers = multiprocessing.cpu_count() * 2 + 1
+
 
 worker_class = "gevent"
 daemon = True
