@@ -26,6 +26,11 @@ function start() {
     echo "Activating virtenv"
     activate-virtenv
 
+    # app servers have changed
+    if [ $OPENSHIFT_PYTHON_SERVER -ne $OPENSHIFT_PYTHON_RUNNING_SERVER]; then
+        build_server
+    fi
+
     export PYTHONPATH=$PYTHONPATH:$OPENSHIFT_REPO_DIR
 
     case "$OPENSHIFT_PYTHON_SERVER" in
@@ -104,6 +109,9 @@ function build_server() {
             pip install gunicorn
             ;;
     esac
+
+    echo $OPENSHIFT_PYTHON_SERVER > env/OPENSHIFT_PYTHON_RUNNING_SERVER
+    export OPENSHIFT_PYTHON_RUNNING_SERVER=$OPENSHIFT_PYTHON_SERVER
 }
 
 
