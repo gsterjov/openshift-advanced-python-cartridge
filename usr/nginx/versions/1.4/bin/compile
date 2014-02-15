@@ -13,8 +13,9 @@ pcre_ver=${PCRE_VERSION:-8.33}
 pcre_file=${PCRE_FILE:-pcre-$pcre_ver.tar.gz}
 pcre_url=${PCRE_URL:-http://sourceforge.net/projects/pcre/files/pcre/$pcre_ver/$pcre_file}
 
-nginx_ver=${NGINX_VERSION:-1.4.4}
-nginx_file=${NGINX_FILE:-nginx-$nginx_ver.tar.gz}
+nginx_ver=${NGINX_VERSION:-1.4}
+nginx_patch=5
+nginx_file=${NGINX_FILE:-nginx-$nginx_ver.$nginx_patch.tar.gz}
 nginx_url=${NGINX_URL:-http://nginx.org/download/$nginx_file}
 
 
@@ -32,14 +33,14 @@ else
     echo " done"
 fi
 
-if test -d $src_dir/nginx-$nginx_ver
+if test -d $src_dir/nginx-$nginx_ver.$nginx_patch
 then
-    echo "-----> Using Nginx $nginx_ver"
+    echo "-----> Using Nginx $nginx_ver.$nginx_patch"
 else
-    mkdir -p $src_dir/nginx-$nginx_ver
+    mkdir -p $src_dir/nginx-$nginx_ver.$nginx_patch
     cd $src_dir
     echo    "       First download, may take several minutes"
-    echo -n "-----> Installing Nginx $nginx_ver..."
+    echo -n "-----> Installing Nginx $nginx_ver.$nginx_patch..."
     curl -sO $nginx_url
     tar zxf $nginx_file
     rm -f $nginx_file
@@ -47,7 +48,7 @@ else
 fi
 
 
-cd $src_dir/nginx-$nginx_ver/
+cd $src_dir/nginx-$nginx_ver.$nginx_patch/
 ./configure --with-pcre=$src_dir/pcre-$pcre_ver/ --with-http_ssl_module
 make
 cp -f objs/nginx $bin_dir

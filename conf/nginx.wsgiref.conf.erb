@@ -1,0 +1,3 @@
+upstream appserver {
+    server <%= ENV['OPENSHIFT_ADVANCED_PYTHON_IP'] %>:15000 fail_timeout=30;
+}

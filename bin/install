@@ -7,7 +7,15 @@ case "$1" in
       version="$2"
 esac
 
-echo "$version" > "$OPENSHIFT_ADVANCED_PYTHON_DIR/env/OPENSHIFT_ADVANCED_PYTHON_VERSION"
+
+echo "$version" > env/OPENSHIFT_ADVANCED_PYTHON_VERSION
+echo "1.4" > env/NGINX_VERSION
+echo "wsgiref" > env/OPENSHIFT_PYTHON_SERVER
+
+
+for dir in logs run; do
+	mkdir -p $dir
+done
 
 mkdir -p $OPENSHIFT_ADVANCED_PYTHON_DIR/template
 

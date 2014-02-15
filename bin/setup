@@ -7,13 +7,6 @@ case "$1" in
       version="$2"
 esac
 
-
-echo "1.4.4" > env/NGINX_VERSION
-
-for dir in logs run; do
-	mkdir -p $dir
-done
-
 # Update environment
 source $OPENSHIFT_ADVANCED_PYTHON_DIR/usr/python/versions/$version/lib/update-configuration
 update-configuration

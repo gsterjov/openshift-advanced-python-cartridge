@@ -11,6 +11,9 @@ NGINX_PID_FILE=$OPENSHIFT_ADVANCED_PYTHON_DIR/run/nginx.pid
 function start() {
     echo "Starting Nginx"
 
+    # use the defined webserver config
+    cp conf/nginx.$OPENSHIFT_PYTHON_SERVER.conf conf/nginx.appserver.conf
+
     # nginx will always use the prefix defined at compile time unless an absolute path to the conf file is given
     nohup "$NGINX_EXEC" -c "$NGINX_CONFIG_FILE" > logs/nginx.log 2>&1
     [ "$?" == "0" ] && wait_for_pid_file $NGINX_PID_FILE
@@ -72,7 +75,7 @@ function tidy() {
 
 
 function update() {
-    version=${NGINX_VERSION:-1.4.4}
+    version=${NGINX_VERSION:-1.4}
 
     echo "Rebuilding Nginx v$version"
     stop
