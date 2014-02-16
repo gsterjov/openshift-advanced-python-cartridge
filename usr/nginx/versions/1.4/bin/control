@@ -19,8 +19,13 @@ function start() {
     echo "Starting Nginx"
 
     # generate the config files
-    oo-erb usr/nginx/versions/1.4/conf/nginx.conf.erb > conf/nginx.conf
-    oo-erb usr/nginx/versions/1.4/conf/nginx.$OPENSHIFT_PYTHON_SERVER.conf.erb > conf/nginx.appserver.conf
+    if [ -f $OPENSHIFT_REPO_DIR/nginx.conf.erb ]; then
+        oo-erb usr/nginx/versions/1.4/conf/nginx.custom.conf.erb > conf/nginx.conf
+        oo-erb $OPENSHIFT_REPO_DIR/nginx.conf.erb > conf/nginx.custom.conf
+    else
+        oo-erb usr/nginx/versions/1.4/conf/nginx.conf.erb > conf/nginx.conf
+        oo-erb usr/nginx/versions/1.4/conf/nginx.$OPENSHIFT_PYTHON_SERVER.conf.erb > conf/nginx.appserver.conf
+    fi
 
     # nginx will always use the prefix defined at compile time unless an absolute path to the conf file is given
     nohup "$NGINX_EXEC" -c "$NGINX_CONFIG_FILE" > logs/nginx.log 2>&1

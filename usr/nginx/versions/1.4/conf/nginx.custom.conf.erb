@@ -1,0 +1,41 @@
+error_log  <%= ENV['OPENSHIFT_ADVANCED_PYTHON_DIR'] %>logs/error.log;
+pid        <%= ENV['OPENSHIFT_ADVANCED_PYTHON_DIR'] %>run/nginx.pid;
+
+worker_processes 1;
+
+events {
+    worker_connections  1024;
+    accept_mutex off;
+}
+
+
+http {
+    include       mime.types;
+    default_type  application/octet-stream;
+
+    client_body_temp_path  <%= ENV['OPENSHIFT_TMP_DIR'] %>client_temp;
+    proxy_temp_path        <%= ENV['OPENSHIFT_TMP_DIR'] %>proxy_temp;
+    fastcgi_temp_path      <%= ENV['OPENSHIFT_TMP_DIR'] %>fastcgi_temp;
+    uwsgi_temp_path        <%= ENV['OPENSHIFT_TMP_DIR'] %>uwsgi_temp;
+    scgi_temp_path         <%= ENV['OPENSHIFT_TMP_DIR'] %>scgi_temp;
+
+    log_format  main  '$remote_addr - $remote_user [$time_local] "$request" '
+                      '$status $body_bytes_sent "$http_referer" '
+                      '"$http_user_agent" "$http_x_forwarded_for"';
+
+    access_log  <%= ENV['OPENSHIFT_ADVANCED_PYTHON_DIR'] %>logs/access.log  main;
+
+    sendfile  on;
+    gzip      on;
+
+    keepalive_timeout  65;
+
+
+    map $http_upgrade $connection_upgrade {
+        default upgrade;
+        ''      close;
+    }
+
+
+    include  <%= ENV['OPENSHIFT_ADVANCED_PYTHON_DIR'] %>conf/nginx.custom.conf;
+}

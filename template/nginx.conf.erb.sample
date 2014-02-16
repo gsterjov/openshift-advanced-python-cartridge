@@ -1,0 +1,40 @@
+# This is an example of how to override the default integration with
+# nginx and your chosen appserver. The http configuration is still handled
+# by the cartridge, however you can define your own server configuration and
+# directly control how requests are handled.
+
+upstream appserver {
+    # wsgiref and others that don't support unix domain sockets must bind to
+    # a local port. Internal ports on OpenShift start at 15000
+    server <%= ENV['OPENSHIFT_ADVANCED_PYTHON_IP'] %>:15000 fail_timeout=30;
+
+    # when possible a unix domain socket will be used. gevent and gunicorn requires this.
+    # server unix:<%= ENV['OPENSHIFT_ADVANCED_PYTHON_DIR'] %>run/appserver.sock fail_timeout=0;
+}
+
+server {
+    listen  <%= ENV['OPENSHIFT_ADVANCED_PYTHON_IP'] %>:<%= ENV['OPENSHIFT_ADVANCED_PYTHON_PORT'] %>;
+    root    <%= ENV['OPENSHIFT_REPO_DIR'] %>public;
+
+    server_name _;
+    keepalive_timeout 5;
+
+    location / {
+        try_files $uri @proxy_to_app;
+    }
+
+    location @proxy_to_app {
+        # websocket support. A map for $http_upgrade and $connection_upgrade
+        # already exists in the main configuration for convenience
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection $connection_upgrade;
+
+        proxy_set_header Host $http_host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_redirect off;
+
+        proxy_pass http://appserver;
+    }
+}
