@@ -33,7 +33,7 @@ function start() {
     activate-virtenv
 
     # app servers have changed
-    if [ "$OPENSHIFT_PYTHON_SERVER" -ne "$OPENSHIFT_PYTHON_RUNNING_SERVER" ]; then
+    if [ "$OPENSHIFT_PYTHON_SERVER" != "$OPENSHIFT_PYTHON_RUNNING_SERVER" ]; then
         build_server
     fi
 
