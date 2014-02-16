@@ -49,3 +49,15 @@ Default: <code>number of CPUs * 2 + 1</code>
 ### Static files
 
 Static files will be served from the <code>public/</code> directory. These files will be served directly by Nginx.
+
+
+### Web Sockets
+
+Web socket support is enabled in Nginx, however it does little more than passing the requests through with the appropriate upgrade headers. More complex websocket environments will need to go for the customised <code>nginx.conf</code> option.
+
+In the future there might be a nicer way to support websockets as a completely separate server. For example, the application might be served out by gunicorn, but websocket services served out with twisted or tornado. These are purely thoughts at the moment however.
+
+
+### Custom nginx.conf
+
+Like the standalone Nginx cartridge, its possible to provide your own server configuration to be included in the main <code>nginx.conf</code> file. A sample is provided in the cloned repo as <code>nginx.conf.erb.sample</code>. Simply remove the .sample suffix and commit the changes.<code>nginx.conf.erb</code> will be processed and included in the main configuration every time the server starts.
