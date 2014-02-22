@@ -11,6 +11,7 @@ fi
 
 
 NGINX_EXEC=$OPENSHIFT_ADVANCED_PYTHON_DIR/usr/nginx/versions/$NGINX_VERSION/bin/nginx
+NGINX_CONFIG_TEMPLATE_DIR=$OPENSHIFT_ADVANCED_PYTHON_DIR/usr/nginx/versions/$NGINX_VERSION/conf
 NGINX_CONFIG_FILE=$OPENSHIFT_ADVANCED_PYTHON_DIR/conf/nginx.conf
 NGINX_PID_FILE=$OPENSHIFT_ADVANCED_PYTHON_DIR/run/nginx.pid
 
@@ -19,12 +20,14 @@ function start() {
     echo "Starting Nginx"
 
     # generate the config files
+    oo-erb $NGINX_CONFIG_TEMPLATE_DIR/nginx.conf.erb > $NGINX_CONFIG_FILE
+    oo-erb $NGINX_CONFIG_TEMPLATE_DIR/nginx.$OPENSHIFT_PYTHON_SERVER.conf.erb > conf/nginx.appserver.conf
+
+    # customised server configuration
     if [ -f $OPENSHIFT_REPO_DIR/nginx.conf.erb ]; then
-        oo-erb usr/nginx/versions/1.4/conf/nginx.custom.conf.erb > conf/nginx.conf
-        oo-erb $OPENSHIFT_REPO_DIR/nginx.conf.erb > conf/nginx.custom.conf
+        oo-erb $OPENSHIFT_REPO_DIR/nginx.conf.erb > conf/nginx.server.conf
     else
-        oo-erb usr/nginx/versions/1.4/conf/nginx.conf.erb > conf/nginx.conf
-        oo-erb usr/nginx/versions/1.4/conf/nginx.$OPENSHIFT_PYTHON_SERVER.conf.erb > conf/nginx.appserver.conf
+        oo-erb $NGINX_CONFIG_TEMPLATE_DIR/nginx.server.conf.erb > conf/nginx.server.conf
     fi
 
     # nginx will always use the prefix defined at compile time unless an absolute path to the conf file is given

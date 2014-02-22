@@ -1,8 +1,3 @@
-# This is an example of how to override the default integration with
-# nginx and your chosen appserver. The http configuration is still handled
-# by the cartridge, however you can define your own server configuration and
-# directly control how requests are handled.
-
 server {
     listen  <%= ENV['OPENSHIFT_ADVANCED_PYTHON_IP'] %>:<%= ENV['OPENSHIFT_ADVANCED_PYTHON_PORT'] %>;
     root    <%= ENV['OPENSHIFT_REPO_DIR'] %>public;
@@ -33,7 +28,6 @@ server {
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
         proxy_redirect off;
 
-        # the upstream 'appserver' always points to the selected python server
         proxy_pass http://appserver;
     }
 }
