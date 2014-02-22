@@ -18,7 +18,7 @@ To install this cartridge use the cartridge reflector when creating an app
 
 ### Usage
 
-Using the cartridge isn't very different to the official python cartridge. Instead of providing a WSGI <code>application()</code> function at <code>wsig/application</code> you instead provide the <code>application()</code> function at <code>app.py</code>. This file will be used directly by all the available servers.
+Using the cartridge isn't very different to the official python cartridge. Instead of providing a WSGI <code>application()</code> function at <code>wsgi/application</code> you instead provide the <code>application()</code> function at <code>app.py</code>. This file will be used directly by all the available servers.
 
 By default **wsgiref** is used so a working environment can be provided immediately. This is easily changed by setting the <code>OPENSHIFT_PYTHON_SERVER</code> environment variable and then restarting or redeploying the app.
 
