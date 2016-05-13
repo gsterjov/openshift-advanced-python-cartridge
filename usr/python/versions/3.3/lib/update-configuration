@@ -8,7 +8,7 @@ function update-configuration {
     echo "$OPENSHIFT_ADVANCED_PYTHON_DIR/virtenv/venv/bin:$OPENSHIFT_ADVANCED_PYTHON_DIR/bin:${sclpath}" > $OPENSHIFT_ADVANCED_PYTHON_DIR/env/OPENSHIFT_PYTHON_PATH_ELEMENT
 
     local ld_path=$(LD_LIBRARY_PATH="" scl enable python33 "printenv LD_LIBRARY_PATH")
-    path_append ${LD_LIBRARY_PATH:-:} ${ld_path:-:} > $OPENSHIFT_ADVANCED_PYTHON_DIR/env/LD_LIBRARY_PATH
+    path_append ${LD_LIBRARY_PATH:-:} ${ld_path:-:} > $OPENSHIFT_ADVANCED_PYTHON_DIR/env/OPENSHIFT_ADVANCED_PYTHON_LD_LIBRARY_PATH_ELEMENT
 
     local man_path=$(MANPATH="" scl enable python33 "printenv MANPATH")
     path_append ${MANPATH:-:} ${man_path:-:} > $OPENSHIFT_ADVANCED_PYTHON_DIR/env/MANPATH
